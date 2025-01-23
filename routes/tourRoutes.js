@@ -4,12 +4,18 @@ const express=require('express')
 
 
 const router=express.Router()
-// router.param('id',tourControler.checkId)
 
-// router.route('/').get(getAllTours).post(postTour);
-// router.route('/:id').get(getTour).delete(deleteTour).patch(patchTour);
+router
+.route('/top-5-cheap')
+.get(tourControler.aliasTopTours , tourControler.getAllTours)
+
+router.route('/tour-stats').get(tourControler.getToursStates);
+router.route('/monthly-plan/:year').get(tourControler.getMonthlyPlan);
+
 router.route('/').get(tourControler.getAllTours).post(tourControler.createTour);
-router.route('/:id').get(tourControler.getTourById).delete(tourControler.deleteTour).patch(tourControler.patchTour);
+
+router.route('/:id').get(tourControler.getTourById).delete(tourControler.deleteTour).patch(tourControler.updateTour);
+
 router.route('/name').get(tourControler.getTourByName);
 
 module.exports=router
