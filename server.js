@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 const app = require(`./app`);
 
@@ -11,32 +10,39 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 // console.log(DB);
-mongoose.connect(DB)
-  .then(con => {
-    // console.log(con.connections)
-    // console.log('_readyState:', con.connections[0]._readyState);
-    if (con.connections[0]._readyState === 1) {
-      console.log('The DB connection is "connected".');
-    }
-  });
+mongoose.connect(DB).then(con => {
+  // console.log(con.connections)
+  // console.log('_readyState:', con.connections[0]._readyState);
+  if (con.connections[0]._readyState === 1) {
+    console.log('The DB connection is "connected".');
+  }
+});
 
-
-// const testTour = new Tour({
-//   name:'the Forest Hicker',
-//   rating:4.7,
-//   price: 497,
-// })
-
-// testTour.save().then(
-//   doc=>{
-//     console.log(doc)
-//   }).catch(err=>
-//     console.log('Errorsave db',err)
-  
-// )
-// console.log(module)
+// console.log(process.env);
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port - ${port}`);
 });
+
+process.on('unhandledRejection', err => {
+  console.log(
+    ` error message from server.js unhandledRejection - ${err.name} ${err.message}`
+  );
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+
+process.on('uncaughtException', err => {
+    console.log(
+        ` error message from server.js uncaughtException - ${err.name} ${err.message}`
+      );
+      server.close(() => {
+          process.exit(1);
+        });
+      });
+      
+      // console.log(`${1/0}`)
+      // console.log(x)

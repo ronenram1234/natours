@@ -1,4 +1,5 @@
 const express = require('express');
+const AppError = require('./utils/appError');
 
 const morgan = require('morgan');
 const app = express();
@@ -30,6 +31,33 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+app.all('*', (req, res, next) => {
+  // option 1
+  // res.status(404).json({
+    //   status: 'fail',
+    
+    //   message: `Can't find ${req.originalUrl} on this server`
+    
+    // option 2
+    // const err = new Error(`Can't find ${req.originalUrl} on this server`);
+    // err.status = 'fail';
+    // err.statusCode = 404;
+    // next(err);
+
+    // option 3
+
+    
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`,404));
+});
+
+// @ts-ignore
+app.use((err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message
+  });
+});
+
 module.exports = app;
-
-
