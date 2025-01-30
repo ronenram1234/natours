@@ -1,4 +1,5 @@
 class AppError extends Error {
+  // @ts-ignore
   constructor(message, statusCode) {
     super(message);
 
