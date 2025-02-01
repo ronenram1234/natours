@@ -7,7 +7,7 @@ process.on('uncaughtException', err => {
   process.exit(1);
 });
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './.env' });
 const app = require('./app');
 
 const DB = process.env.DATABASE.replace(
@@ -20,7 +20,7 @@ mongoose
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
-    useUnifiedTopology: true  // Add this option
+    useUnifiedTopology: true // Add this option
   })
   .then(() => console.log('DB connection successful!'));
 // mongoose
@@ -31,7 +31,7 @@ mongoose
 //   })
 //   .then(() => console.log('DB connection successful!'));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
