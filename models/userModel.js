@@ -17,11 +17,18 @@ const userSchema = new mongoose.Schema({
   },
   photo: String,
 
-  password: { 
-    type: String, 
-    require: true, 
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default:'user'
+  },
+
+  password: {
+    type: String,
+    require: true,
     select: false,
-    minlength: 8 },
+    minlength: 8
+  },
   passwordConfirm: {
     type: String,
     require: [true, 'please confirm your password'],
@@ -31,7 +38,8 @@ const userSchema = new mongoose.Schema({
       }
     },
     message: 'Password are not thte same!'
-  }
+  },
+  passwordChangedAt: Date
 });
 
 userSchema.pre('save', async function(next) {
@@ -46,9 +54,26 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-userSchema.methods.correctPassword= async function (candidatePasseord,userPasseord){
-  return await bcrypt.compare(candidatePasseord,userPasseord)
-}
+userSchema.methods.correctPassword = async function(
+  candidatePasseord,
+  userPasseord
+) {
+  return await bcrypt.compare(candidatePasseord, userPasseord);
+};
+
+userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  // False means NOT changed
+  return false;
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

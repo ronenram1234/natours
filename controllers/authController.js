@@ -1,5 +1,6 @@
 // @ts-nocheck
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -62,16 +63,63 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.protect = catchAsync((req, res, next) => {
+exports.restrictTo =catchAsync(async (req, res, next) => {
 
-// getting token and check of it's there
+  next()
+})
 
-// verfication tiken
+exports.protect = catchAsync(async (req, res, next) => {
+  let decoded;
+  let token;
+  let freshUser;
 
-// check i fuser still exists
+  try {
+    // console.log(req.headers)
+    // getting token and check of it's there
+    if (
+      req.headers.autorization &&
+      req.headers.autorization.startsWith('Bearer')
+    ) {
+      token = req.headers.autorization.split(' ')[1];
+    }
+    console.log(token);
+    if (!token) {
+      return next(
+        new AppError(
+          'You are not logged in! Please log in to get access⛔',
+          401
+        )
+      );
+    }
 
+    // token verfication
+    // const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    decoded = await jwt.verify(token, process.env.JWT_SECRET);
 
-// check if user changed password after the tooken was issued
+    // check if user still exists
+    freshUser = await User.findById(decoded.id);
+    console.log(freshUser);
+    if (!freshUser) {
+      return next(new AppError('user does not exist ⛔', 401));
+    }
 
+    if (freshUser.changedPasswordAfter(decoded.iat)) {
+      return next(
+        new AppError(
+          'User recently changed password! Please log in again.',
+          401
+        )
+      );
+    }
+
+    // check if user changed password after the tooken was issued
+  } catch (err) {
+    console.log('error in protect function');
+
+    if (!decoded) {
+      return next(new AppError('Token decode failed⛔', 401));
+    }
+  }
+  req.user = freshUser;
   next();
 });
