@@ -18,11 +18,25 @@ router
   .get(authControllers.protect, tourController.getAllTours)
   .post(tourController.createTour);
 
+// router
+//   .route('/:id')
+//   .get(tourController.getTour)
+//   .patch(tourController.updateTour)
+//   .delete(
+//     authControllers.protect,
+    
+//     tourController.deleteTour
+//   );
 router
   .route('/:id')
   .get(tourController.getTour)
   .patch(tourController.updateTour)
-  .delete(authControllers.protect, tourController.deleteTour);
-  // .delete(authControllers.protect,authControllers.restrictTo('admin'), tourController.deleteTour);
+  .delete(
+    authControllers.protect,
+    authControllers.restrictTo('admin', 'lead-guide'),
+    tourController.deleteTour
+  );
+
+  
 
 module.exports = router;

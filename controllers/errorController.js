@@ -31,7 +31,7 @@ const sendErrorDev = (err, res) => {
   });
 };
 
-const handleJWTExpiredError  = err =>
+const handleJWTExpiredError = err =>
   new AppError('Your token has expired! please login again', 401);
 
 const sendErrorProd = (err, res) => {
@@ -57,10 +57,10 @@ const sendErrorProd = (err, res) => {
 
 module.exports = (err, req, res, next) => {
   // console.log(err.stack);
-
+  // console.log()
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
-  console.log('error');
+  // console.log(' module.exports - error', err);
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
@@ -71,7 +71,8 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
     if (error.name === 'JsonWebTokenError') error = handleJWTError(error);
-    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError(error);
+    if (error.name === 'TokenExpiredError')
+      error = handleJWTExpiredError(error);
 
     sendErrorProd(error, res);
   }

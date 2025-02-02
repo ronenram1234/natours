@@ -1,0 +1,40 @@
+[{
+  "_id": {
+    "$oid": "679b97a6e57b7574987a8ab1"
+  },
+  "role": "user",
+  "name": "ron31c",
+  "email": "re2331e@yahoo.com",
+  "password": "$2a$12$pTt5tv9glIosV7ohlX3aBuUSkDKkSRi0a45jOu7C5LO9csKCcL9TK",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679da9b2ec35da8498f287ae"
+  },
+  "role": "user",
+  "name": "Dan",
+  "email": "dan12@gmail.com",
+  "password": "$2a$12$aKDETl9/aXhFx7D4scgA1.w1vNvhGVK.qO4iRwH00Aq/IIS.kzZ8S",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679da9cbec35da8498f287b0"
+  },
+  "role": "user",
+  "name": "Joe",
+  "email": "joea@gmail.com",
+  "password": "$2a$12$dcR7tFqS4kfL.B1WE5vmn.UBdCWPBeeF4u0NqfEW6HsT/mndkbFme",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679dbc913f35a19ff07fe6d6"
+  },
+  "role": "admin",
+  "name": "admin",
+  "email": "admin@gmail.com",
+  "password": "$2a$12$nNM6S6tw7i30fkZoMZuDvORVYZDGIXwMWzbl1Dwa24Ebx7Q4jv.ai",
+  "__v": 0
+}]
