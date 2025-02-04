@@ -14,6 +14,19 @@ const signToken = id => {
   });
 };
 
+const craeteSendTokn=(user,statusCode, res )=>{
+
+  createSendToken(newUser,201,res)
+  // res.status(statusCode).json({
+  //   status: 'success',
+  //   token,
+  //   data: {
+  //     user: user
+    
+  //   }
+  // });
+}
+
 exports.signup = catchAsync(async (req, res, next) => {
   console.log('signup');
   try {
@@ -60,11 +73,12 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // check if every is ok and send message
   const token = signToken(user._id);
+  createSendToken(user,200,res)
 
-  res.status(200).json({
-    status: 'sucess',
-    token
-  });
+  // res.status(200).json({
+  //   status: 'sucess',
+  //   token
+  // });
 });
 
 exports.restrictTo = catchAsync(async (req, res, next) => {
@@ -148,7 +162,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const restToken = user.createPasswordResetToken();
   await user.save({ valiteBeforeSave: false });
   // send back email
-  const resetURL = `${req.protocol}://${req.get('host' )}/api/v1/user/resetPassword/${restToken}`;
+  const resetURL = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/user/resetPassword/${restToken}`;
 
   const message = `Forgot your password? Submit a Patch request wiith your new password and passwordConfirm to ${resetURL}.\n If you didn;t forget your pasword, please ignore this email!`;
 
@@ -178,20 +194,18 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 
-
-
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // Get user based on token
-  console.log("start resetPasword")
+  console.log('start resetPasword');
   const hashedToken = (this.PasswordResetToken = crypto
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex'));
-console.log('-----------------')
-console.log(`findOne({
+  console.log('-----------------');
+  console.log(`findOne({
   passwordResetToken: ${hashedToken},
-  passwordResetExpires: { $gt: ${Date.now()} }})`)
-  console.log('-----------------')
+  passwordResetExpires: { $gt: ${Date.now()} }})`);
+  console.log('-----------------');
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
@@ -206,11 +220,29 @@ console.log(`findOne({
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
-  console.log("end  resetPasword")
-  const token=signToken(user._id)
+  console.log('end  resetPasword');
+  const token = signToken(user._id);
   res.status(200).json({
     status: 'success',
     message: 'Token sent to email'
   });
 });
 
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1) Get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2) Check if POSTed current password is correct
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong.', 401));
+  }
+
+  // 3) If so, update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+  // User.findByIdAndUpdate will NOT work as intended!
+
+  // 4) Log user in, send JWT
+  createSendToken(user, 200, res);
+});
