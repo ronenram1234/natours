@@ -10,16 +10,6 @@
 },
 {
   "_id": {
-    "$oid": "679da9b2ec35da8498f287ae"
-  },
-  "role": "user",
-  "name": "Dan",
-  "email": "dan12@gmail.com",
-  "password": "$2a$12$aKDETl9/aXhFx7D4scgA1.w1vNvhGVK.qO4iRwH00Aq/IIS.kzZ8S",
-  "__v": 0
-},
-{
-  "_id": {
     "$oid": "679da9cbec35da8498f287b0"
   },
   "role": "user",
@@ -36,5 +26,28 @@
   "name": "admin",
   "email": "admin@gmail.com",
   "password": "$2a$12$nNM6S6tw7i30fkZoMZuDvORVYZDGIXwMWzbl1Dwa24Ebx7Q4jv.ai",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "679da9b2ec35da8498f287ae"
+  },
+  "role": "user",
+  "name": "Dan",
+  "email": "dan12@gmail.com",
+  "password": "$2a$12$HkmWsgFb7BHsUlI3FSfU4.yhGYcQ.9WrKn4cT8ERaUWnYLAyId/tm",
+  "__v": 0,
+  "passwordChangedAt": {
+    "$date": "2025-02-04T15:13:08.342Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67a235e6526d762094020b86"
+  },
+  "role": "admin",
+  "name": "Admin1",
+  "email": "ronenr@gmail.com",
+  "password": "$2a$12$n3vjc9VWPYOSZQTyB1E6ceQoMXaxzcUtRrtkyCYbPVuPRMpwMwMS.",
   "__v": 0
 }]

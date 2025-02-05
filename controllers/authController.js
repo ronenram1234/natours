@@ -7,6 +7,7 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 // const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const { createSecureContext } = require('tls');
 
 const signToken = id => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -14,40 +15,58 @@ const signToken = id => {
   });
 };
 
-const craeteSendTokn=(user,statusCode, res )=>{
+// const createSendToken = (user, statusCode, res) => {
+//   const token = signToken(user._id);
 
-  createSendToken(newUser,201,res)
-  // res.status(statusCode).json({
-  //   status: 'success',
-  //   token,
-  //   data: {
-  //     user: user
-    
-  //   }
-  // });
-}
+//   res.status(statusCode).json({
+//     status: 'success',
+//     token,
+//     data: {
+//       user: user
+//     }
+//   });
+// };
+
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  // Remove password from output to user screen
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
+};
 
 exports.signup = catchAsync(async (req, res, next) => {
   console.log('signup');
   try {
-    const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm
-    });
+    const newUser = await User.create(req.body);
+    createSendToken(newUser, 201, res);
+    // const token = signToken(newUser._id);
 
-    const token = signToken(newUser._id);
-
-    res.status(201).json({
-      status: 'success',
-      token,
-      data: {
-        // user: newUser
-        name: req.body.name,
-        email: req.body.email
-      }
-    });
+    // res.status(201).json({
+    //   status: 'success',
+    //   token,
+    //   data: {
+    //     // user: newUser
+    //     name: req.body.name,
+    //     email: req.body.email
+    //   }
+    // });
   } catch (err) {
     res.status(500).json({
       status: 'error',
@@ -73,7 +92,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // check if every is ok and send message
   const token = signToken(user._id);
-  createSendToken(user,200,res)
+  createSendToken(user, 200, res);
 
   // res.status(200).json({
   //   status: 'sucess',
@@ -94,10 +113,10 @@ exports.protect = catchAsync(async (req, res, next) => {
     // console.log(req.headers)
     // getting token and check of it's there
     if (
-      req.headers.autorization &&
-      req.headers.autorization.startsWith('Bearer')
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
     ) {
-      token = req.headers.autorization.split(' ')[1];
+      token = req.headers.authorization.split(' ')[1];
     }
     console.log(token);
     if (!token) {
@@ -222,10 +241,11 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   console.log('end  resetPasword');
   const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    message: 'Token sent to email'
-  });
+  // res.status(200).json({
+  //   status: 'success',
+  //   message: 'Token sent to email'
+  // });
+  createSendTokn(userser, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
